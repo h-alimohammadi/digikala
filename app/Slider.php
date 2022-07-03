@@ -27,6 +27,7 @@ class Slider extends Model
         $slider->withPath($string);
         return $slider;
     }
+    
 
     protected static function boot()
     {
