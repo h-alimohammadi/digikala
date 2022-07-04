@@ -6,6 +6,7 @@ use App\Brand;
 use App\Category;
 use App\Color;
 use App\Http\Requests\ProductRequest;
+use App\Item;
 use App\Product;
 use App\ProductGallery;
 use Illuminate\Http\Request;
@@ -138,10 +139,37 @@ class ProductController extends CustomController
         $i = 1;
         $ids = explode(',', $request->get('parameters'));
         foreach ($ids as $value) {
-            $productGallery = ProductGallery::where(['id'=> $value, 'product_id' => $id])->first();
+            $productGallery = ProductGallery::where(['id' => $value, 'product_id' => $id])->first();
             $productGallery->update(['position' => $i]);
             $i++;
         }
         return 'yes';
+    }
+
+    public function items($id)
+    {
+        $product = Product::where('id', $id)->select(['id', 'title', 'cat_id'])->firstOrFail();
+        $productItems = Item::getProductItems($product);
+//        return $productItems;
+        return view('product.item', compact('product', 'productItems'));
+    }
+
+    public function addItems($id, Request $request)
+    {
+        $product = Product::where('id', $id)->select(['id'])->firstOrFail();
+        DB::table('item_value')->where('product_id',$id)->delete();
+        $items = $request->get('item_value',[]);
+        foreach ($items as $key => $item){
+            foreach ($item as $value){
+                if (!empty($value)){
+                    DB::table('item_value')->insert([
+                        'product_id'=>$product->id,
+                        'item_id'=>$key,
+                        'item_value'=>$value,
+                    ]);
+                }
+            }
+        }
+        return redirect()->back()->with('message', 'ثبت مشخصات فنی با موفقیت انجام شد.');
     }
 }

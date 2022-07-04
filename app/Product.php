@@ -63,6 +63,7 @@ class Product extends Model
                 }
             }
             DB::table('product_color')->where('product_id',$product->id)->delete();
+            DB::table('item_value')->where('product_id',$product->id)->delete();
         });
     }
 

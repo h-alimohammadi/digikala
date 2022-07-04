@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Item extends Model
 {
+
     protected $table = 'items';
     protected $fillable = ['category_id', 'title', 'position', 'show_item', 'parent_id'];
 
@@ -50,8 +51,8 @@ class Item extends Model
                             'show_item' => $getValue,
                             'parent_id' => $id
                         ]);
-                    }else{
-                        self::where('id',$key1)->update([
+                    } else {
+                        self::where('id', $key1)->update([
                             'title' => $childItem,
                             'position' => $count1,
                             'show_item' => $getValue,
@@ -64,8 +65,28 @@ class Item extends Model
 
     }
 
+    public static function getProductItems($product)
+    {
+        define('product_id',$product->id);
+        $category = Category::findOrFail($product->cat_id);
+        $cate_id[0] = $product->cat_id;
+        if ($category) {
+            $cate_id[1] = $category->parent_id;
+        }
+        $items = Item::with('getChild.getValue')->where('parent_id', 0)
+            ->whereIn('category_id', $cate_id)->orderBy('position', 'ASC')->get();
+        return $items;
+    }
+
     public function getChild()
     {
         return $this->hasMany(Item::class, 'parent_id', 'id')->orderBy('position', 'ASC');
     }
+
+    public function getValue()
+    {
+        return $this->hasMany(ItemValue::class, 'item_id', 'id')
+            ->where('product_id',product_id);
+    }
 }
+

@@ -169,8 +169,13 @@ function check_has_product_warranty($productWarranty)
 function getShowValue($request, $key, $key1)
 {
     $checkBoxInputs = $request->get('check_box_input', []);
-    if (!empty($checkBoxInputs)){
-        return array_key_exists($key1, $checkBoxInputs[$key]) ? 1 : 0;
+    if (!empty($checkBoxInputs)) {
+        if (array_key_exists($key, $checkBoxInputs)) {
+            if (array_key_exists($key1, $checkBoxInputs[$key])) {
+                return 1;
+            }
+        }
     }
+    return 0;
 
 }

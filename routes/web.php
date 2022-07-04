@@ -30,6 +30,8 @@ Route::prefix('admin')->namespace('Admin')->group(function () {
     Route::post('product/gallery_upload/{id}','ProductController@galleryUpload');
     Route::delete('product/gallery/{id}','ProductController@removeImageGallery');
     Route::post('product/gallery/change_image_position/{id}','ProductController@changeImagePosition');
+    Route::get('product/{id}/items','ProductController@items');
+    Route::post('product/{id}/items','ProductController@addItems');
     create_crud_route('slider','SliderController');
 
 

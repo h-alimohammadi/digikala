@@ -235,3 +235,11 @@ add_child_item = function (id) {
         '</div>';
     $("#item_" + id).find('.child_item_box').append(html);
 };
+add_item_input_value=function (id) {
+    const html ='<div class="form-group">' +
+        '<label></label> ' +
+        '<input type="text" name="item_value['+id+'][]" class="form-control">' +
+        '</div>';
+
+    $("#input_item_box_"+id).append(html);
+};
