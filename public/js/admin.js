@@ -94,6 +94,7 @@ function loadFile(event) {
         output.src = render.result;
     };
 }
+
 function loadFile2(event) {
     const render = new FileReader();
     render.readAsDataURL(event.target.files[0])
@@ -214,4 +215,23 @@ remove_tag = function (id, text) {
     let a = keywords.replace(t1, '');
     let b = a.replace(t2, '');
     document.getElementById('keywords').value = b;
+};
+
+add_item_input = function () {
+    let id = document.getElementsByClassName('item_input').length + 1;
+    const html = '<div class="form-group item_group" id="item_-' + id + '">' +
+        '<input class="form-control item_input" type="text" name="item[-' + id + ']" placeholder="نام گروه ویژگی">' +
+        '<span class="fa fa-plus-circle" onclick="add_child_item(-' + id + ')"></span>' +
+        '<div class="child_item_box"></div>' +
+        '</div>';
+    $('#item_box').append(html);
+};
+
+add_child_item = function (id) {
+    let child_count = document.getElementsByClassName('chile_input_item').length+1;
+    let count = document.getElementsByClassName('child_'+id).length+1;
+    const html = '<div class="form-group child_' + id + '">' +
+        count+'- <input type="checkbox" name="check_box_input[' + id + '][-' + child_count + ']"><input type="text" name="child_item[' + id + '][-' + child_count + ']" class="form-control chile_input_item" placeholder="نام ویژگی ...">' +
+        '</div>';
+    $("#item_" + id).find('.child_item_box').append(html);
 };

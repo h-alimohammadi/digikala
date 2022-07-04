@@ -520,3 +520,36 @@ body {
 .slider_img {
     max-width: 100%;
 }
+
+.item_group {
+    padding: 15px;
+    background: #f8fafc;
+    border-radius: 4px;
+    -webkit-border-radius: 4px;
+}
+
+.item_group .form-control {
+    max-width: 350px;
+}
+
+.child_item_box {
+    padding-top: 10px;
+}
+
+.child_item_box input[type='checkbox'] {
+    margin-left: 10px;
+    margin-right: 5px;
+}
+
+.item_remove_message {
+    float: left;
+    color: red;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.child_item_remove_message {
+    color: red;
+    font-size: 13px;
+    cursor: pointer;
+}
