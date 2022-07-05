@@ -179,3 +179,37 @@ function getShowValue($request, $key, $key1)
     return 0;
 
 }
+
+function is_selected_filter($list, $filter_id)
+{
+    $result = false;
+    foreach ($list as $value) {
+        if ($value->filter_value == $filter_id) {
+            $result = true;
+        }
+    }
+    return $result;
+}
+
+function getFilterArray($list)
+{
+    $array = [];
+    foreach ($list as $key => $value) {
+        $array[$value->item_id] = $key;
+    }
+    return $array;
+}
+
+
+function getFilterItemValue($filter_id, $product_filter)
+{
+    $string = '';
+    foreach ($product_filter as $key => $value) {
+        if ($value == $filter_id) {
+            $string .= '@' . $key;
+
+        }
+    }
+    return $string;
+}
+

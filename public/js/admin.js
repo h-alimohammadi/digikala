@@ -228,18 +228,77 @@ add_item_input = function () {
 };
 
 add_child_item = function (id) {
-    let child_count = document.getElementsByClassName('chile_input_item').length+1;
-    let count = document.getElementsByClassName('child_'+id).length+1;
+    let child_count = document.getElementsByClassName('chile_input_item').length + 1;
+    let count = document.getElementsByClassName('child_' + id).length + 1;
     const html = '<div class="form-group child_' + id + '">' +
-        count+'- <input type="checkbox" name="check_box_input[' + id + '][-' + child_count + ']"><input type="text" name="child_item[' + id + '][-' + child_count + ']" class="form-control chile_input_item" placeholder="نام ویژگی ...">' +
+        count + '- <input type="checkbox" name="check_box_input[' + id + '][-' + child_count + ']"><input type="text" name="child_item[' + id + '][-' + child_count + ']" class="form-control chile_input_item" placeholder="نام ویژگی ...">' +
         '</div>';
     $("#item_" + id).find('.child_item_box').append(html);
 };
-add_item_input_value=function (id) {
-    const html ='<div class="form-group">' +
+add_item_input_value = function (id) {
+    const html = '<div class="form-group">' +
         '<label></label> ' +
-        '<input type="text" name="item_value['+id+'][]" class="form-control">' +
+        '<input type="text" name="item_value[' + id + '][]" class="form-control">' +
         '</div>';
 
-    $("#input_item_box_"+id).append(html);
+    $("#input_item_box_" + id).append(html);
 };
+
+add_filter_input = function () {
+    let id = document.getElementsByClassName('filter_input').length + 1;
+    const html = '<div class="form-group item_group" id="filter_-' + id + '">' +
+        '<input class="form-control filter_input" type="text" name="filter[-' + id + ']" placeholder="نام گروه فیلتر">' +
+        '<span class="fa fa-plus-circle" onclick="add_child_filter(-' + id + ')"></span>' +
+        '<div class="child_filter_box"></div>' +
+        '</div>';
+    $('#filter_box').append(html);
+};
+add_child_filter = function (id) {
+    let child_count = document.getElementsByClassName('child_input_filter').length + 1;
+    let count = document.getElementsByClassName('child_' + id).length + 1;
+    const html = '<div class="form-group child_' + id + '">' +
+        count + '- <input type="text" name="child_filter[' + id + '][-' + child_count + ']" class="form-control child_input_filter" placeholder="نام فیلتر ...">' +
+        '</div>';
+    $("#filter_" + id).find('.child_filter_box').append(html);
+};
+
+
+$(".item_filter_box ul li input[type='checkbox']").click(function () {
+    let filter = $(this).parent().parent().parent().find('.filter_value');
+    let input = $(this).parent().parent().parent().parent().find('.item_value');
+    let text = $(this).parent().text().trim();
+    let input_value= input.val();
+    let filter_value = filter.val();
+    if ($(this).is(":checked")) {
+        if (input_value.trim() == '') {
+            input_value = text;
+            filter_value = $(this).val();
+        } else {
+            input_value = value + ',' + text;
+            filter_value = filter_value + '@' + $(this).val();
+
+        }
+        input.val(input_value);
+        filter.val(filter_value);
+    } else {
+        filter_value = filter_value.replace("@" + $(this).val(), "");
+        filter_value = filter_value.replace($(this).val(), "");
+        value = value.replace("," + text, "");
+        value = value.replace(text + ",", "");
+        value = value.replace(text, "");
+        input.val(value);
+        filter.val(filter_value);
+    }
+});
+
+$(".show_filter_box").click(function () {
+    let el = $(this).parent().find('.item_filter_box ul');
+    let display = el.css('display');
+    // alert(display);
+    if (display == 'none') {
+        el.slideDown(500);
+    } else {
+        el.slideUp(200);
+    }
+
+});

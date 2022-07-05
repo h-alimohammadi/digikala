@@ -10,6 +10,9 @@
         </div>
         <div class="panel_content">
             @include('Include.alert')
+            @php
+                $array_filters = getFilterArray($productFilters);
+            @endphp
             @if(sizeof($productItems)>0)
                 <form method="post" id="product_items_form" action="{{url('admin/product/'.$product->id.'/items')}}">
                     @csrf
@@ -20,14 +23,33 @@
                                 <div class="form-group">
                                     <label class="">{{$value2->title}} : </label>
                                     @if(sizeof($value2->getValue)>0)
-                                        <input type="text" class="form-control" name="item_value[{{$value2->id}}][]"
+                                        <input type="text" class="form-control item_value" name="item_value[{{$value2->id}}][]"
                                                value="{{$value2->getValue[0]->item_value}}">
 
                                     @else
-                                        <input type="text" class="form-control" name="item_value[{{$value2->id}}][]">
+                                        <input type="text" class="form-control item_value" name="item_value[{{$value2->id}}][]">
                                     @endif
-                                    <span class="fa fa-plus-circle"
-                                          onclick="add_item_input_value({{$value2->id}})"></span>
+
+                                    @if(array_key_exists($value2->id,$array_filters))
+                                        <div class="btn btn-success show_filter_box">انتخاب</div>
+
+                                        <div class="item_filter_box">
+                                            <input type="hidden" value="{{getFilterItemValue($productFilters[$array_filters[$value2->id]]->id,$product_filter)}}" class="filter_value"
+                                                   name="filter_value[{{$value2->id}}][{{$productFilters[$array_filters[$value2->id]]->id}}]">
+                                            <ul>
+                                                @foreach($productFilters[$array_filters[$value2->id]]['getChild'] as $k=>$v)
+                                                    <li>
+                                                        <input type="checkbox"@if(array_key_exists($v->id,$product_filter)) checked="checked" @endif value="{{$v->id}}">
+                                                        {{$v->title}}
+                                                    </li>
+                                                @endforeach
+                                            </ul>
+                                        </div>
+                                    @else
+                                        <span class="fa fa-plus-circle"
+                                              onclick="add_item_input_value({{$value2->id}})"></span>
+                                    @endif
+
                                     <div class="input_item_box" id="input_item_box_{{$value2->id}}">
                                         @if(sizeof($value2->getValue)>1)
                                             @foreach($value2->getValue as $key=>$value3)

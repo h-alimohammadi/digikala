@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use DB;
 
 class Item extends Model
 {
@@ -67,15 +68,60 @@ class Item extends Model
 
     public static function getProductItems($product)
     {
-        define('product_id',$product->id);
+        define('product_id', $product->id);
         $category = Category::findOrFail($product->cat_id);
         $cate_id[0] = $product->cat_id;
         if ($category) {
             $cate_id[1] = $category->parent_id;
         }
-        $items = Item::with('getChild.getValue')->where('parent_id', 0)
+        $items = self::with('getChild.getValue')->where('parent_id', 0)
             ->whereIn('category_id', $cate_id)->orderBy('position', 'ASC')->get();
         return $items;
+    }
+
+    public static function getProductItemsWithFilter($product)
+    {
+        define('product_id', $product->id);
+        $category = Category::findOrFail($product->cat_id);
+        $cate_id[0] = $product->cat_id;
+        if ($category) {
+            $cate_id[1] = $category->parent_id;
+        }
+        $items = self::with('getChild.getValue')->where('parent_id', 0)
+            ->whereIn('category_id', $cate_id)->orderBy('position', 'ASC')->get();
+        $filters = Filter::with('getChild')->where('parent_id', 0)->whereIn('category_id', $cate_id)->whereNotNull('item_id')->get();
+        return ['items' => $items, 'filters' => $filters];
+    }
+
+    public static function getCategoryItems($categry)
+    {
+        $category = Category::findOrFail($categry->id);
+        $cate_id[0] = $categry->id;
+        if ($category) {
+            $cate_id[1] = $category->parent_id;
+        }
+        $items = self::with('getChild')->where('parent_id', 0)
+            ->whereIn('category_id', $cate_id)->orderBy('position', 'ASC')->get();
+        return $items;
+    }
+
+    public static function addFilter($key, $product, $filter_value)
+    {
+        if (array_key_exists($key, $filter_value)) {
+            foreach ($filter_value[$key] as $k => $value) {
+                DB::table('product_filter')->where(['product_id' => $product->id, 'filter_id' => $k])->delete();
+                $ex = explode('@', $value);
+                foreach ($ex as $v) {
+                  if (!empty($v)){
+                      DB::table('product_filter')->insert([
+                          'product_id' => $product->id,
+                          'filter_id' => $k,
+                          'filter_value' => $v,
+                      ]);
+                  }
+                }
+            }
+        }
     }
 
     public function getChild()
@@ -86,7 +132,9 @@ class Item extends Model
     public function getValue()
     {
         return $this->hasMany(ItemValue::class, 'item_id', 'id')
-            ->where('product_id',product_id);
+            ->where('product_id', product_id);
     }
+
+
 }
 

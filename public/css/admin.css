@@ -553,9 +553,45 @@ body {
     font-size: 13px;
     cursor: pointer;
 }
-.input_item_box{
+
+.input_item_box {
     margin-top: 10px;
 }
-#product_items_form .form-control{
-    width: calc(100% - 220px) !important;
+
+#product_items_form .form-control {
+    width: calc(100% - 260px) !important;
+}
+
+.child_filter_box {
+    margin-top: 10px;
+}
+
+.item_filter_box {
+    width: calc(100% - 260px) !important;
+    margin-right: 174px;
+    z-index: 10;
+    position: relative;
+    background: white;
+
+}
+
+.item_filter_box ul {
+    position: absolute;
+    width: 100% !important;
+    overflow-y: auto;
+    border: 1px solid #ced4da;
+    background: white;
+    margin-right: 0;
+    padding: 10px;
+    max-height:300px;
+    display: none;
+
+
+}
+
+.item_filter_box ul li {
+    list-style: none;
+    padding: 10px;
+    font-size: 13px;
+    cursor: pointer;
 }

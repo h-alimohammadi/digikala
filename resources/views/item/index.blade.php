@@ -13,8 +13,8 @@
             <form method="post" action="{{url('admin/category/'.$category->id.'/items')}}">
                 @csrf
                 <div id="item_box" class="category_items">
-
-                    @foreach($items as $item)
+                    @if(sizeof($items)>0)
+                        @foreach($items as $item)
                         <div class="form-group item_group" id="item_{{$item->id}}">
                             <input class="form-control item_input" type="text" name="item[{{$item->id}}]"
                                    placeholder="نام گروه ویژگی" value="{{$item->title}}">
@@ -45,6 +45,14 @@
                             </div>
                         </div>
                     @endforeach
+                    @else
+                        <div class="form-group item_group" id="item_-1">
+                            <input class="form-control item_input" type="text" name="item[-1]" placeholder="نام گروه ویژگی">
+                            <span class="fa fa-plus-circle" onclick="add_child_item(-1)"></span>
+                            <div class="child_item_box">
+                            </div>
+                        </div>
+                    @endif
                 </div>
                 <span class="fa fa-plus-square" onclick="add_item_input()"></span>
                 <div class="form-group">
