@@ -1,5 +1,6 @@
 <?php
 
+use App\Category;
 use App\Lib\Jdf;
 use App\ProductPrice;
 use App\ProductWarranty;
@@ -213,3 +214,38 @@ function getFilterItemValue($filter_id, $product_filter)
     return $string;
 }
 
+function get_show_category_count($cat)
+{
+    $n = 0;
+    foreach ($cat as $value) {
+        if ($value->notShow == 0)
+            $n++;
+    }
+
+
+    return $n;
+}
+
+function getCatList()
+{
+
+    $data = cache('catList');
+    if ($data) {
+        return $data;
+    } else {
+        $catList = Category::with('getChild.getChild.getChild')->where('parent_id', 0)->get();
+        $minutes = 30 * 24 * 60 * 60;
+        cache()->put('catList', $catList, $minutes);
+    }
+    return $catList;
+
+}
+
+function get_cat_url($cat)
+{
+    if (!empty($cat->search_url)) {
+        return $cat->search_url;
+    } else {
+        return 'search/' . $cat->url;
+    }
+}

@@ -31,6 +31,7 @@ class CategoryController extends CustomController
 
     public function store(CategoryRequest $request)
     {
+        cache()->forget('catList');
         $notShow = $request->has('notShow') ? 1 : 0;
         $category = new Category($request->all());
         $category->notShow = $notShow;
@@ -49,6 +50,7 @@ class CategoryController extends CustomController
 
     public function update(Category $category, CategoryRequest $request)
     {
+        cache()->forget('catList');
         session_start();
         if (isset($_SESSION['page']))
             $page = $_SESSION['page'];
