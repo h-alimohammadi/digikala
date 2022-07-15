@@ -44,26 +44,39 @@ class Product extends Model
 
     public function category()
     {
-        return $this->hasOne(Category::class, 'id', 'cat_id');
+        return $this->hasOne(Category::class, 'id', 'cat_id')->withDefault(['name' => '']);
     }
 
     public function brand()
     {
-        return $this->hasOne(Brand::class, 'id', 'brand_id');
+        return $this->hasOne(Brand::class, 'id', 'brand_id')
+            ->withDefault(['name' => '', 'ename' => '']);
+    }
+
+    public function getColor()
+    {
+        return $this->hasMany(ProductColor::class, 'product_id', 'id');
+    }
+
+    public function productWarranties()
+    {
+        return $this->hasMany(ProductWarranty::class, 'product_id', 'id')
+            ->where('product_number', '>', 0)
+            ->orderBy('price2', 'ASC');
     }
 
     protected static function boot()
     {
         parent::boot();
-        static::deleting(function ($product){
-            if ($product->deleted_at != null){
+        static::deleting(function ($product) {
+            if ($product->deleted_at != null) {
                 if ($product->image_url != null) {
                     remove_file($product->image_url, 'products/');
                     remove_file($product->image_url, 'thumbnails/');
                 }
             }
-            DB::table('product_color')->where('product_id',$product->id)->delete();
-            DB::table('item_value')->where('product_id',$product->id)->delete();
+            DB::table('product_color')->where('product_id', $product->id)->delete();
+            DB::table('item_value')->where('product_id', $product->id)->delete();
         });
     }
 

@@ -19,6 +19,7 @@
             <div class="form-group">
                 {!! Form::label('color_id','انتخاب رنگ :') !!}
                 <select name="color_id" class="selectpicker" data-live-search='true'>
+                    <option value="0">انتخاب رنگ</option>
                     @foreach($colors as $color)
                         <option value="{{$color->color->id}}"
                                 data-content="<span class='color_option' style='background:{{$color->color->code}}; @if($color->color->name == 'سفید') color:#000;  @endif'>{{$color->color->name}}</span>" @if($productWarranty->color_id == $color->color->id) selected="selected"  @endif></option>

@@ -61,6 +61,7 @@
     </div>
 </div>
 <script src="{{ asset('js/app.js') }}"></script>
+<script src="{{ asset('js/adminVue.js') }}"></script>
 <script src="{{ asset('js/admin.js') }}"></script>
 @yield('script')
 </body>

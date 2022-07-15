@@ -5,6 +5,7 @@ use App\Lib\Jdf;
 use App\ProductPrice;
 use App\ProductWarranty;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\View;
 use Intervention\Image\Facades\Image;
 
 function get_url($string)
@@ -94,9 +95,16 @@ function update_product_price($product)
     $productWarranty = ProductWarranty::where('product_id', $product->id)->where('product_number', '>', 0)->orderBy('price2', 'ASC')->first();
     if ($productWarranty) {
         $product->price = $productWarranty->price2;
+        if ($productWarranty->price1 > $productWarranty->price2) {
+            $discount_price = $productWarranty->price1 - $productWarranty->price2;
+            $product->discount_price = $discount_price;
+        } else
+            $product->discount_price = 0;
+
         $product->status = 1;
         $product->update();
     } else {
+        $product->discount_price = 0;
         $product->status = 0;
         $product->update();
     }
@@ -231,13 +239,13 @@ function getCatList()
 
     $data = cache('catList');
     if ($data) {
-        return $data;
+        View::share('catList', $data);
     } else {
         $catList = Category::with('getChild.getChild.getChild')->where('parent_id', 0)->get();
         $minutes = 30 * 24 * 60 * 60;
         cache()->put('catList', $catList, $minutes);
+        View::share('catList', $catList);
     }
-    return $catList;
 
 }
 
@@ -247,5 +255,46 @@ function get_cat_url($cat)
         return $cat->search_url;
     } else {
         return 'search/' . $cat->url;
+    }
+}
+
+function getTimestamp($date, $type)
+{
+    $jdf = new Jdf();
+    $time = 0;
+    $e = explode('/', $date);
+    if (sizeof($e) == 3) {
+        $y = $e[0];
+        $m = $e[1];
+        $d = $e[2];
+        if ($type == 'first') {
+            $time = $jdf->jmktime(0, 0, 0, $m, $d, $y);
+        } else {
+            $time = $jdf->jmktime(23, 59, 59, $m, $d, $y);
+        }
+    }
+    return $time;
+
+}
+
+function check_has_color_in_product_warranty_list($productWarranties, $color_id)
+{
+    $r = false;
+    foreach ($productWarranties as $key => $productWarranty) {
+        if ($productWarranty->color_id == $color_id) {
+            $r = true;
+        }
+    }
+    return $r;
+}
+
+function get_first_color_id($productWarranties, $color_id)
+{
+    if (sizeof($productWarranties) > 0) {
+        if ($productWarranties[0]->color_id == $color_id)
+            return true;
+
+        else
+            return false;
     }
 }

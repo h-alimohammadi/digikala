@@ -83,6 +83,7 @@
         @yield('content')
     </div>
 </div>
+<script type="text/javascript" src="{{ asset('js/ShopVue.js') }}"></script>
 @yield('script')
 </body>
 </html>

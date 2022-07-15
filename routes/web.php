@@ -39,10 +39,26 @@ Route::prefix('admin')->namespace('Admin')->group(function () {
     Route::post('product/{id}/filters','ProductController@addFilters');
     create_crud_route('slider','SliderController');
 
+    Route::get('incredible-offers','AdminController@incredible_offers');
+    Route::get('ajax/getProductWarranty','AdminController@getProductWarranty');
+    Route::post('add-incredible-offers/{id}','AdminController@addIncredibleOffers');
+    Route::post('remove-incredible-offers/{id}','AdminController@removeIncredibleOffers');
+
 
 });
+
+Route::get('product/{product_id}/{product_url}', 'SiteController@showProduct');
+Route::get('product/{product_id}', 'SiteController@showProduct');
+Route::get('confirm','SiteController@confirm')->middleware('guest');
+//ajax
+Route::post('site/change_color','SiteController@changeColor');
+Route::post('ajax/resend','SiteController@resend')->middleware('guest');;
+Route::post('active_account','SiteController@activeAccount')->middleware('guest')->name('active_account');
 
 
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
+Route::get('test',function (){
+    Auth::logout();
+});

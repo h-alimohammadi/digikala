@@ -595,3 +595,62 @@ body {
     font-size: 13px;
     cursor: pointer;
 }
+.select_item{
+    font-size: 13px;
+    padding: 5px 7px;
+    border: 1px solid #00bfd6;
+    border-radius: 5px;
+    -webkit-border-radius: 5px;
+    cursor: pointer;
+}
+.remove_item{
+    font-size: 13px;
+    padding: 5px 7px;
+    border: 1px solid #ef5661;
+    background: #ef5661;
+    border-radius: 5px;
+    -webkit-border-radius: 5px;
+    cursor: pointer;
+}
+.modal-header{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    border-bottom: 1px solid #e9ecef;
+    border-top-left-radius:.3rem ;
+    border-top-right-radius:.3rem ;
+    height: 50px;
+}
+.modal-header .close{
+    padding: 0 !important;
+    margin: 0 !important;
+}
+.modal-header h5{
+    padding: 0 !important;
+    margin: 0 !important;
+}
+.modal-dialog{
+    min-height: calc(100vh - 60px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+
+}
+#productWarrantyPrice label{
+    width: 35% !important;
+}
+.picker{
+    width: 298px;
+    border-radius: 0 !important;
+}
+.picker table{
+    width: 288px;
+}
+.color-span {
+    padding: 6px 14px;
+    border-radius: 5px;
+    font-size: 14px;
+    color: white;
+}

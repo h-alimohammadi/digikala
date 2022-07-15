@@ -84,6 +84,8 @@ class ProductWarrantyController extends CustomController
 
     public function update(ProductWarranty $productWarranty, ProductWarrantyRequest $request)
     {
+//        return $request;
+
         $productWarranty->update($request->all());
         add_min_product_price($productWarranty);
         update_product_price($this->product);

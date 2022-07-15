@@ -10,7 +10,7 @@
         "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --config=node_modules/laravel-mix/setup/webpack.config.js"
     },
     "devDependencies": {
-        "axios": "^0.19",
+        "axios": "^0.19.2",
         "bootstrap": "^4.0.0",
         "cross-env": "^7.0",
         "jquery": "^3.2",
@@ -20,12 +20,20 @@
         "resolve-url-loader": "2.3.1",
         "sass": "^1.20.1",
         "sass-loader": "7.*",
-        "vue": "^2.5.17",
+        "vue": "^2.7.3",
         "vue-template-compiler": "^2.6.10"
     },
     "dependencies": {
+        "@walidbagh/laravel-vue-pagination": "^3.0.0",
         "bootstrap-select": "^1.13.18",
+        "cors": "^2.8.5",
         "font-awesome": "^4.7.0",
-        "jquery-ui": "^1.13.1"
+        "jquery-ui": "^1.13.1",
+        "laravel-vue-pagination": "^3.0.0",
+        "shetabit-laravel-vue-pagination": "^2.3.7",
+        "swiper": "^4.5.0",
+        "vue-axios": "^3.4.1",
+        "vue-cleave-component": "^2.1.3",
+        "vue-paginator-ak": "^1.0.1"
     }
 }
