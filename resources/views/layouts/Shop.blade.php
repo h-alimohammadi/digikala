@@ -34,7 +34,18 @@
             <div class="header_action">
                 <div class="dropdown">
                     <div class="index_auth_div" role="button" data-toggle="dropdown">
-                        <span>ورود / ثبت نام</span>
+                        <span>
+                            @if(Auth::check())
+                                @if(!empty(auth()->user()->name))
+                                    {{ auth()->user()->name }}
+                                @else
+                                    {{ replace_number(auth()->user()->mobile) }}
+                                @endif
+
+                            @else
+                                ورود / ثبت نام
+                            @endif
+                        </span>
                         <span class="fa fa-angle-down"></span>
                     </div>
                     <div class="dropdown-menu header-auth-box" aria-labelledby="dropdownMenuLink">
@@ -61,6 +72,7 @@
                         </a>
                         @if(Auth::check())
                             <div class="dropdown-divider"></div>
+                            <form action="{{ route('logout') }}" method="post" id="logout_form">@csrf</form>
                             <a class="dropdown-item logout">
                                 خروج از حساب کاربری
                             </a>
@@ -70,7 +82,7 @@
                 <div class="header_divider"></div>
                 <div class="cart_header_box">
                     <div class="btn_cart">
-                        <p id="cart_product_count" data-counter="0">سبدخرید</p>
+                        <p id="cart_product_count" data-counter="{{\App\Cart::getProductCount()}}">سبدخرید</p>
                     </div>
                 </div>
             </div>
@@ -81,6 +93,16 @@
 
     <div class="container-fluid">
         @yield('content')
+    </div>
+</div>
+<div id="loading_box">
+    <div class="loading_div">
+        <img src="{{asset('files/images/shop_icon.jpg')}}">
+        <div class="spinner">
+            <div class="b1"></div>
+            <div class="b2"></div>
+            <div class="b3"></div>
+        </div>
     </div>
 </div>
 <script type="text/javascript" src="{{ asset('js/ShopVue.js') }}"></script>

@@ -88,7 +88,12 @@
                     <span class="has_error">{{$errors->first('description')}}</span>
                 @endif
             </div>
-
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" name="use_for_gift_cart" id="use_for_gift_cart">
+                    استفاد به عنوان کارت هدیه
+                </label>
+            </div>
             <button class="btn btn-success">ثبت اطلاعات</button>
             {!! Form::close() !!}
         </div>

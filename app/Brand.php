@@ -38,4 +38,9 @@ class Brand extends Model
                 remove_file($brand->icon, 'brand/');
         });
     }
+
+    public function getCat()
+    {
+        return $this->hasMany(CatBrand::class,'brand_id','id');
+    }
 }

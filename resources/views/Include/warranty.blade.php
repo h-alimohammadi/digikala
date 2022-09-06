@@ -1,4 +1,4 @@
-<form method="post" action="{{url('Cart')}}">
+<form method="post" action="{{url('Cart')}}" id="add_cart_form">
     @csrf
     @php
         $warranty_id=0;
@@ -19,6 +19,7 @@
             @endif
         @endforeach
     </ul>
+    <input type="hidden" name="color_id" value="{{ $color_id }}">
     <p class="info_item_product">
         <span class="fa fa-check-square"></span>
         @foreach($product->productWarranties as $key=>$value)
@@ -72,7 +73,6 @@
 
     <input type="hidden"name="warranty_id" id="warranty_id" value="{{$warranty_id}}">
     <input type="hidden"name="product_id" id="product_id" value="{{$product->id}}">
-
     <div class="d-inline-flex w-100">
         <div>
             @if($product_price2 != $product_price1)
@@ -83,10 +83,10 @@
         @if($product_price2 != $product_price1)
             <div class="product_discount" data-title="تخفیف">
                 @php
-                    $a= ($product_price1 / $product_price2)*100;
+                    $a= ($product_price2 / $product_price1)*100;
                     $a=round($a-100);
                 @endphp
-                ٪{{replace_number($a)}}
+                ٪{{replace_number(abs($a))}}
             </div>
         @endif
     </div>

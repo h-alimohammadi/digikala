@@ -11,7 +11,7 @@ class Product extends Model
     use SoftDeletes;
     protected $table = 'products';
     protected $fillable = ['title', 'ename', 'product_url', 'price', 'discount_price', 'show', 'view',
-        'keywords', 'description', 'special', 'cat_id', 'brand_id', 'image_url', 'tozihat', 'order_number', 'status'];
+        'keywords', 'description', 'special', 'cat_id', 'brand_id', 'image_url', 'tozihat', 'order_number', 'status','use_for_gift_cart','ready_to_shipment'];
 
     public static function productStatus()
     {
@@ -57,6 +57,15 @@ class Product extends Model
     {
         return $this->hasMany(ProductColor::class, 'product_id', 'id');
     }
+    public function ProductGallery()
+    {
+        return $this->hasMany(ProductGallery::class, 'product_id', 'id')->orderBy('position','ASC');
+    }
+
+    public function getItemValue()
+    {
+        return $this->hasMany(ItemValue::class, 'product_id', 'id');
+    }
 
     public function productWarranties()
     {
@@ -78,6 +87,12 @@ class Product extends Model
             DB::table('product_color')->where('product_id', $product->id)->delete();
             DB::table('item_value')->where('product_id', $product->id)->delete();
         });
+    }
+
+    public function getFirstProductPrice()
+    {
+        return $this->hasOne(ProductWarranty::class,'product_id','id')
+            ->orderBy('price2','ASC')->select(['id','product_id','price1','price2','offers','offers_last_time']);
     }
 
 }

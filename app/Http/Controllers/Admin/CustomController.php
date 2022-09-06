@@ -32,11 +32,16 @@ class CustomController extends Controller
 
     public function remove_items(Request $request)
     {
+//        return $request;
         $model_name = '\\App\\' . $this->model;
         $query_string = property_exists($this,'queryString') ? '&' . $this->queryString : '';
 
+        if (isset($this->route_params2)){
+            $ids = $request->get('id_' . $this->route_params2, []);
+        }else{
+            $ids = $request->get('id_' . $this->route_params, []);
 
-        $ids = $request->get('id_' . $this->route_params, []);
+        }
         foreach ($ids as $id) {
             $row = $model_name::withTrashed()->findOrFail($id);
             if ($row->deleted_at == null) {
@@ -58,8 +63,13 @@ class CustomController extends Controller
         $model_name = '\\App\\' . $this->model;
         $query_string = property_exists($this,'queryString') ? '?' . $this->queryString : '';
 
+        if (isset($this->route_params2)){
+            $ids = $request->get('id_' . $this->route_params2, []);
+        }else{
+            $ids = $request->get('id_' . $this->route_params, []);
 
-        $ids = $request->get('id_' . $this->route_params, []);
+        }
+
         foreach ($ids as $id) {
             $row = $model_name::withTrashed()->findOrFail($id);
             $row->restore();

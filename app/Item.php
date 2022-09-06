@@ -93,10 +93,14 @@ class Item extends Model
         return ['items' => $items, 'filters' => $filters];
     }
 
-    public static function getCategoryItems($categry)
+    public static function getCategoryItems($category)
     {
-        $category = Category::findOrFail($categry->id);
-        $cate_id[0] = $categry->id;
+        if (is_object($category)){
+            $category = Category::findOrFail($category->id);
+        }else{
+            $category = Category::findOrFail($category);
+        }
+        $cate_id[0] = $category->id;
         if ($category) {
             $cate_id[1] = $category->parent_id;
         }

@@ -2,14 +2,24 @@
 
 namespace App\Http\Controllers;
 
+use App\Brand;
+use App\Cart;
+use App\CatBrand;
+use App\Category;
+use App\Color;
+use App\Comment;
 use App\Item;
 use App\ItemValue;
 use App\Product;
 use App\ProductWarranty;
+use App\Review;
+use App\SearchProduct;
 use App\Slider;
 use App\User;
 use Illuminate\Http\Request;
 use Auth;
+use Illuminate\Support\Facades\DB;
+use function PHPSTORM_META\type;
 use Session;
 
 class SiteController extends Controller
@@ -43,8 +53,9 @@ class SiteController extends Controller
         $productItems = Item::getProductItems($product);
         $productItemCount = ItemValue::where('product_id', $product->id)->count();
         $relateProducts = Product::where(['cat_id' => $product->cat_id, 'brand_id' => $product->brand_id])->where('id', '!=', $product->id)->get();
+        $review = Review::where('product_id', $product->id)->get();
 //        return $productItems;
-        return view('Shop.show_product', compact('product', 'productItems', 'productItemCount', 'relateProducts'));
+        return view('Shop.show_product', compact('product', 'productItems', 'productItemCount', 'relateProducts', 'review'));
 
     }
 
@@ -104,4 +115,138 @@ class SiteController extends Controller
                 ->with('validate_error', 'کد وارد شده اشتباه است.')->withInput();
         }
     }
+
+    public function addCart(Request $request)
+    {
+        Cart::addCart($request);
+        return redirect('/Cart');
+    }
+
+    public function showCart()
+    {
+        $cartData = Cart::getCartData();
+        return view('shop.cart', compact('cartData'));
+    }
+
+    public function removeProduct(Request $request)
+    {
+        return Cart::removeProduct($request);
+    }
+
+    public function changeProductCart(Request $request)
+    {
+        return Cart::changeProductCart($request);
+    }
+
+    public function showChildCatList($car_url, Request $request)
+    {
+        $category = Category::with('getChild.getChild.getChild')->where('url', $car_url)->firstOrFail();
+        return view('Shop.child_cat', compact('category'));
+    }
+
+    public function CatProduct($car_url, Request $request)
+    {
+        $category = Category::with('getChild.getChild')
+            ->with(['getChild' => function ($query) {
+                $query->whereNull('search_url');
+            }])->where('url', $car_url)->firstOrFail();
+        $filters = Category::getCatFilter($category);
+        $brands = CatBrand::with('getBrand')->where('cat_id', $category->id)->get();
+        $colors = [];
+        $checkHasColor = DB::table('product_color')->where('cat_id', $category->id)->first();
+        if ($checkHasColor) {
+            $colors = Color::get();
+        }
+        return view('Shop.cat_product', compact('filters', 'category', 'brands', 'colors'));
+    }
+
+    public function getCatProduct($car_url, Request $request)
+    {
+        $searchProduct = new SearchProduct($request);
+        $category = Category::with('getChild.getChild')->where('url', 'cellphone')->firstOrFail();
+        $searchProduct->setProductCategory($category);
+        $searchProduct->brands = $request->get('brand', null);
+
+        $catList = $searchProduct->setProductCategory($category);
+        return $searchProduct->getProduct();
+    }
+
+    public function brandProduct($brand_name)
+    {
+        $brand = Brand::where('ename', $brand_name)->firstOrFail();
+        if ($brand) {
+            return view('Shop.brand_product', compact('brand'));
+        }
+    }
+
+    public function getBrandProduct(Request $request, $brand_name)
+    {
+        $brand = Brand::with('getCat.category')->where('ename', $brand_name)->firstOrFail();
+        $searchProduct = new SearchProduct($request);
+        $searchProduct->brands = $brand->id;
+        $catList = $searchProduct->setBrandCategory($request->get('category', []));
+        return $searchProduct->getProduct();
+
+
+    }
+
+    public function Compare($id_product1, $product_id2 = null, $product_id3 = null, $product_id4 = null)
+    {
+        $items = [];
+        $ids = return_id_product([$id_product1, $product_id2, $product_id3, $product_id4]);
+
+        $products = Product::select(['id', 'title', 'product_url', 'cat_id', 'price'])->with(['getItemValue', 'ProductGallery'])->whereIn('id', $ids)->get();
+        if (sizeof($products) > 0) {
+            $items = Item::getCategoryItems($products[0]->cat_id);
+            $category = Category::where('id', $products[0]->cat_id)->firstOrFail();
+            return view('Shop.compare', compact('items', 'products', 'category'));
+        } else {
+            return redirect('/');
+        }
+    }
+
+    public function getCompareProducts(Request $request)
+    {
+        $brand_id = $request->get('brand_id', 0);
+        $cat_id = $request->get('cat_id', 0);
+        $search_product = $request->get('search_product', '');
+        $product = Product::where('cat_id', $cat_id)->select(['id', 'price', 'image_url', 'title']);
+        if ($brand_id > 0) {
+            $product = $product->where('brand_id', $brand_id);
+        }
+        if ($search_product != '') {
+            $product = $product->where('title', 'LIKE', '%' . $search_product . '%');
+//            $product = $product->where('ename','LIKE', '%'.$search_product.'%');
+
+        }
+        $product = $product->orderBy('order_number', 'DESC')->paginate(10);
+        return $product;
+    }
+
+    public function getCatBrand(Request $request)
+    {
+        $cat_id = $request->get('cat_id', 0);
+        $brands = CatBrand::with('getBrand')->where('cat_id', $cat_id)->get();
+        return $brands;
+    }
+
+    public function commentForm(Product $product)
+    {
+        return view('Shop.comment_form', compact('product'));
+    }
+
+    public function addComment(Product $product, Request $request)
+    {
+        $status = Comment::addComment($request, $product);
+        return redirect('product/dkp-' . $product->id . '/' . $product->product_url)->with('comment_status', $status['status']);
+
+    }
+
+    public function getProductChartData()
+    {
+        
+    }
+
+
+
 }

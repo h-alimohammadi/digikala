@@ -1,3 +1,4 @@
+const site_url = 'http://localhost:8000/';
 let toggeld = false;
 $('.page_sidebar li').click(function () {
     if (!$(this).hasClass('active')) {
@@ -146,7 +147,7 @@ deleted_row = function () {
 
 $(".check_box").click(function () {
     send_array_data = false;
-    const $checkboxes = $('table tr td input[type="checkbox"]');
+    const $checkboxes = $('.panel_content input[type="checkbox"]');
     const count = $checkboxes.filter(':checked').length;
     if (count > 0) {
         $(".item_form").removeClass('off');
@@ -156,7 +157,7 @@ $(".check_box").click(function () {
 });
 $('.item_form').click(function () {
     send_array_data = true;
-    const $checkboxes = $('table tr td input[type="checkbox"]');
+    const $checkboxes = $('.panel_content input[type="checkbox"]');
     const count = $checkboxes.filter(':checked').length;
     if (count > 0) {
         let href = window.location.href.split('?');
@@ -173,8 +174,8 @@ $('.item_form').click(function () {
     }
 });
 
-$("span").tooltip();
-$("a").tooltip();
+$("span[data-toggle='tooltip']").tooltip();
+$("a[data-toggle='tooltip']").tooltip();
 
 function restore_row(url, t, message) {
     _method = 'post';
@@ -267,14 +268,15 @@ $(".item_filter_box ul li input[type='checkbox']").click(function () {
     let filter = $(this).parent().parent().parent().find('.filter_value');
     let input = $(this).parent().parent().parent().parent().find('.item_value');
     let text = $(this).parent().text().trim();
-    let input_value= input.val();
+    let input_value = input.val();
     let filter_value = filter.val();
+
     if ($(this).is(":checked")) {
         if (input_value.trim() == '') {
             input_value = text;
             filter_value = $(this).val();
         } else {
-            input_value = value + ',' + text;
+            input_value = input_value + ',' + text;
             filter_value = filter_value + '@' + $(this).val();
 
         }
@@ -283,10 +285,10 @@ $(".item_filter_box ul li input[type='checkbox']").click(function () {
     } else {
         filter_value = filter_value.replace("@" + $(this).val(), "");
         filter_value = filter_value.replace($(this).val(), "");
-        value = value.replace("," + text, "");
-        value = value.replace(text + ",", "");
-        value = value.replace(text, "");
-        input.val(value);
+        input_value = input_value.replace("," + text, "");
+        input_value = input_value.replace(text + ",", "");
+        input_value = input_value.replace(text, "");
+        input.val(input_value);
         filter.val(filter_value);
     }
 });
@@ -301,4 +303,47 @@ $(".show_filter_box").click(function () {
         el.slideUp(200);
     }
 
+});
+
+$('.comment_status').click(function () {
+    const comment_id = $(this).attr('comment-id');
+    const status = $(this).attr('comment-status');
+    const el = $(this);
+    $("#loading_box").show();
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+    $.ajax({
+        url: site_url + 'admin/comments/change_status',
+        type: "POST",
+        data: "comment_id=" + comment_id,
+        success: function (response) {
+
+            if (response == 'Ok') {
+                if (status == 1) {
+                    el.text('در انتظار تایید');
+                    el.attr('comment-status', 0);
+                    el.parent().parent().parent().removeClass('Accepted').addClass('pending_approval');
+                } else {
+                    el.text('تایید شده');
+                    el.attr('comment-status', 1);
+                    el.parent().parent().parent().removeClass('pending_approval').addClass('Accepted');
+                }
+            }else {
+                $("#server_error_box").show();
+                setTimeout(function () {
+                    $("#server_error_box").hide();
+                },5000);
+            }
+            $("#loading_box").hide();
+
+        },
+        error: function (jqXhr, textstatus, error) {
+            $("#loading_box").hide();
+            $("#server_error_box").show();
+            console.log(error);
+        }
+    });
 });

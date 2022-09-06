@@ -16,6 +16,5 @@ use Illuminate\Http\Request;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
-Route::get('test',function (){
-    return 'hello world!';
-});
+Route::get('get_province','ApiController@getProvince');
+Route::get('get_city/{id}','ApiController@getCity');

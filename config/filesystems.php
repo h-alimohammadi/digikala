@@ -42,7 +42,17 @@ return [
     */
 
     'disks' => [
+        'public_files' => [
 
+            'driver' => 'local',
+
+            'root' => public_path(),
+
+            'url' => env('APP_URL').'/storage',
+
+            'visibility' => 'public',
+
+        ],
         'local' => [
             'driver' => 'local',
             'root' => storage_path('app'),

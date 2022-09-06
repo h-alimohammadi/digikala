@@ -10,6 +10,8 @@ CKEDITOR.editorConfig = function (config) {
 
     // The toolbar groups arrangement, optimized for two toolbar rows.
     config.toolbarGroups = [
+        {name: 'divarea'},
+
         {name: 'clipboard', groups: ['clipboard', 'undo']},
         {name: 'editing', groups: ['find', 'selection', 'spellchecker']},
         {name: 'links'},
@@ -45,6 +47,8 @@ CKEDITOR.editorConfig = function (config) {
     config.height = '300px';
     config.width = '100%';
     config.extraPlugins = 'divarea';
+    config.extraPlugins = 'div';
+    config.extraPlugins = 'tableselection';
 
 
 };

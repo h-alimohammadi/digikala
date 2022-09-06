@@ -43,9 +43,10 @@
                         {!! Form::label('color_id','انتخاب رنگ :') !!}
                         <select name="product_color[]" class="selectpicker" data-live-search='true' multiple="multiple">
                             @foreach($colors as $color)
-                                    <option value="{{$color->id}}" @if(array_key_exists($color->id,$productColor)) selected="selected"
-                                            @endif
-                                            data-content="<span class='color_option' style='background:{{$color->code}}; @if($color->name == 'سفید') color:#000;  @endif'>{{$color->name}}</span>"></option>
+                                <option value="{{$color->id}}"
+                                        @if(array_key_exists($color->id,$productColor)) selected="selected"
+                                        @endif
+                                        data-content="<span class='color_option' style='background:{{$color->code}}; @if($color->name == 'سفید') color:#000;  @endif'>{{$color->name}}</span>"></option>
                             @endforeach
                         </select>
 
@@ -95,6 +96,12 @@
                 @if($errors->has('description'))
                     <span class="has_error">{{$errors->first('description')}}</span>
                 @endif
+            </div>
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" name="use_for_gift_cart" id="use_for_gift_cart" @if($product->use_for_gift_cart != 'no') checked="checked" @endif>
+                    استفاد به عنوان کارت هدیه
+                </label>
             </div>
             <button class="btn btn-primary">ویرایش محصول</button>
             {!! Form::close() !!}

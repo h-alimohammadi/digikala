@@ -73,6 +73,13 @@ class Category extends Model
         $category->withPath($string);
         return $category;
     }
+    public static function getCatFilter($cat){
+        $parent_id=$cat->getParent->id;
+        $array_id=[$cat->id,$parent_id];
+        $filter = Filter::with('getChild')->where('parent_id',0)
+        ->whereIn('category_id',$array_id)->get();
+        return $filter;
+    }
 
     protected static function boot()
     {

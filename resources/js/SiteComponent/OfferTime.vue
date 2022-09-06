@@ -23,17 +23,14 @@
             if ($("#offer_time").attr('data') > 0) {
                 self.show_secound = $('#offer_time').attr('data');
                 self.counter();
-                const setIntervalOfferTime = setInterval(self.counter, 1000);
-                clearInterval(setIntervalOfferTime);
+                setInterval(self.counter, 1000);
 
             }
             $(document).on('click', '#offer_time', function () {
                 if ($("#offer_time").attr('data') > 0) {
                     self.show_secound = $('#offer_time').attr('data');
                     self.counter();
-                    const setIntervalOfferTime = setInterval(self.counter, 1000);
-                } else {
-                    self.show_secound = 0;
+                    setInterval(self.counter, 1000);
                 }
             });
         },

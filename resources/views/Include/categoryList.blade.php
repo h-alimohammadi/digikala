@@ -24,7 +24,7 @@
                                     @foreach($value2->getChild as $key3=>$value3)
                                         @if($value3->notShow == 0)
                                             <li>
-                                                <a href="{{get_cat_url($value3)}}" class="">{{$value3->name}}</a>
+                                                <a href="{{url(get_cat_url($value3))}}" class="">{{$value3->name}}</a>
                                             </li>
                                             @php $c++; @endphp
                                         @endif
@@ -38,7 +38,7 @@
                                     @if(get_show_category_count($value3->getChild)>=(14-$c)) </ul> @php $c=0; @endphp <ul class="list-inline sub_list"> @endif
                             @if($value3->notShow == 0)
                                 <li>
-                                    <a href="{{get_cat_url($value3)}}" class="child_cat">
+                                    <a href="{{url(get_cat_url($value3))}}" class="child_cat">
                                         <span>{{$value3->name}}</span>
                                         <span class="fa fa-angle-left"></span>
                                     </a>
@@ -46,7 +46,7 @@
                                         @foreach($value3->getChild as $key4=>$value4)
                                             @if($value4->notShow == 0)
                                                 <li>
-                                                    <a href="{{get_cat_url($value4)}}" class="child_cat">{{$value4->name}}</a>
+                                                    <a href="{{url(get_cat_url($value4))}}" class="child_cat">{{$value4->name}}</a>
                                                 </li>
                                                 @php
                                                     $c++;

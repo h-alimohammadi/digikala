@@ -22,11 +22,7 @@ class ProductController extends CustomController
 
     public function index(Request $request)
     {
-//        session_start();
-//        if (isset($_GET['page']))
-//            $_SESSION['page'] = '?page=' . $_GET['page'];
         $products = Product::getData($request->all());
-//        return $products;
         $trashed_product_count = Product::onlyTrashed()->count();
         $status = Product::productStatus();
         return view('product.index', compact('products', 'trashed_product_count', 'request', 'status'));
@@ -46,6 +42,7 @@ class ProductController extends CustomController
     {
         $product_color = $request->get('product_color', []);
         $product = new Product($request->all());
+        $product->use_for_gift_cart = $request->has('use_for_gift_cart') ? 'yes' : 'no';
         $product->product_url = get_url($request->get('title'));
         $img = upload_file($request, 'pic', 'products');
         $product->image_url = $img;
@@ -58,6 +55,8 @@ class ProductController extends CustomController
                 'cat_id' => $product->cat_id,
             ]);
         }
+
+        set_cat_brand(null,$product);
         return redirect('admin/product')->with('message', 'ثبت محصول با موفقیت انجام شد.');
     }
 
@@ -74,8 +73,14 @@ class ProductController extends CustomController
 
     public function update(Product $product, ProductRequest $request)
     {
+        $oldData = [
+            'cat_id'=>$product->cat_id,
+            'brand_id'=>$product->brand_id,
+        ];
         $product_color = $request->get('product_color', []);
         $data = $request->all();
+        $data['use_for_gift_cart'] = $request->has('use_for_gift_cart') ? 'yes' : 'no';
+
         $data['product_url'] = get_url($request->get('title'));
         $img = upload_file($request, 'pic', 'products');
         if ($img != null) {
@@ -93,7 +98,9 @@ class ProductController extends CustomController
             ]);
         }
         $product->update($data);
-        return redirect('admin/product')->with('message', 'ثبت محصول با موفقیت انجام شد.');
+
+        set_cat_brand($oldData,$product);
+        return redirect('admin/product')->with('message', 'ویرایش محصول با موفقیت انجام شد.');
     }
 
     public function gallery($id)
@@ -152,10 +159,10 @@ class ProductController extends CustomController
     {
         $product = Product::where('id', $id)->select(['id', 'title', 'cat_id'])->firstOrFail();
         $data = Item::getProductItemsWithFilter($product);
-        $productItems=$data['items'];
-        $productFilters=$data['filters'];
-        $product_filter = ProductFilter::where('product_id',$product->id)->pluck('filter_id','filter_value')->toArray();
-        return view('product.item', compact('product', 'productItems','productFilters','product_filter'));
+        $productItems = $data['items'];
+        $productFilters = $data['filters'];
+        $product_filter = ProductFilter::where('product_id', $product->id)->pluck('filter_id', 'filter_value')->toArray();
+        return view('product.item', compact('product', 'productItems', 'productFilters', 'product_filter'));
     }
 
     public function addItems($id, Request $request)
@@ -175,7 +182,7 @@ class ProductController extends CustomController
                     ]);
                 }
             }
-            Item::addFilter($key ,$product,$filter_value);
+            Item::addFilter($key, $product, $filter_value);
         }
         return redirect()->back()->with('message', 'ثبت مشخصات فنی با موفقیت انجام شد.');
     }

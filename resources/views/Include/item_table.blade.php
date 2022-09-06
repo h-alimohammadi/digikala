@@ -11,10 +11,12 @@
     }
     @endphp
     <div class="dropdown-menu">
+        @if(!isset($remove_new_record))
         <a class="dropdown-item" href="{{url($route.'/create'.$create_param)}}">
             <span class="fa fa-pencil"></span>
             <span>افزودن {{$title}} جدید</span>
         </a>
+        @endif
         <a class="dropdown-item" href="{{url($route.'?trashed=true'.$trashed_param)}}">
             <span class="fa fa-trash"></span>
             <span>سطل زباله ({{replace_number($count)}})</span>
