@@ -13,7 +13,7 @@
                             <td>
                                 <ul>
                                     <li class="title">
-                                        <a href="">{{product.product_title}}</a>
+                                        <a v-bind:href="$siteUrl+'product/dkp-'+product.product_id+'/'+product.product_url">{{product.product_title}}</a>
                                     </li>
                                     <li>
                                         {{product.warranty_name}}
@@ -21,14 +21,16 @@
                                     <li v-if="product.color_name != undefined">
                                         <span>رنگ : </span>
                                         <span>{{ product.color_name }}</span>
-                                        <span class="ui_variant_shape" v-bind:style="{background: product.color_code} "></span>
+                                        <span class="ui_variant_shape"
+                                              v-bind:style="{background: product.color_code} "></span>
                                     </li>
                                 </ul>
                             </td>
                             <td>
                                 <span>تعداد</span>
                                 <p v-if="product.product_number_cart>1">
-                                    <select class="selectpicker" v-model="product.product_count" v-on:change="change_product_count(product)">
+                                    <select class="selectpicker" v-model="product.product_count"
+                                            v-on:change="change_product_count(product)">
                                         <option v-for="i in product.product_number_cart" v-bind:value="i">
                                             {{replace_number(i)}}
                                         </option>
@@ -37,7 +39,25 @@
                                 <p v-else>{{ replace_number(product.product_count) }}</p>
                             </td>
                             <td>
-                                {{ product.price1 }} تومان
+                                <div v-if="check_has_off(product)">
+                                    <div class="discount_cart_div">
+                                        <del style="color: red">
+                                            {{ replace_number(number_format(product.price1)) }} تومان
+                                        </del>
+                                        <p style="color: red">
+                                            <span>
+                                                تخفیف شگفت انگیز
+                                            </span>
+                                            {{ replace_number(number_format((product.price1-product.int_price2))) }} تومان
+                                        </p>
+                                        <p style="font-size: 16px">
+                                             {{ replace_number(number_format((product.int_price2))) }} تومان
+                                        </p>
+                                    </div>
+                                </div>
+                                <span v-else>
+                                    {{ product.price2 }} تومان
+                                </span>
                             </td>
                         </tr>
                     </table>
@@ -112,7 +132,6 @@
             remove_product: function (product) {
                 this.selected_product = product;
                 this.show_dialog_box = true;
-
             },
             approve: function () {
                 this.show_dialog_box = false;
@@ -126,11 +145,17 @@
                 this.axios.post(url, formData).then(responce => {
                     if (responce.data != "error") {
                         this.CartProduct = responce.data;
+                        if (this.CartProduct.product) {
+                            $(".cart_product_count").text(this.replace_number(this.CartProduct.product.length));
+                        } else {
+                            $(".cart_product_count").hide();
+                        }
                     }
                 });
             },
             change_product_count: function (product) {
                 // product.product_count
+                $("#loading_box").show();
                 const url = this.$siteUrl + 'site/cart/change_product_cart';
                 const formData = new FormData();
                 formData.append('product_id', product.product_id);
@@ -140,10 +165,20 @@
                 }
                 formData.append('product_count', product.product_count);
                 this.axios.post(url, formData).then(responce => {
+                    $("#loading_box").hide();
                     if (responce.data != "error") {
                         this.CartProduct = responce.data;
                     }
                 });
+            },
+            check_has_off: function (product) {
+                let time = Date.now();
+                time = parseInt(time / 1000);
+                if (product.offers_last_time > time && product.int_price2 < product.price1) {
+                    return true;
+                } else {
+                    return false;
+                }
             },
         }
     }

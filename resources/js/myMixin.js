@@ -63,6 +63,108 @@ export default {
                 jd = 1 + ((days - 186) % 30);
             }
             return [jy, jm, jd];
-        }
+        },
+        getProvince: function () {
+            this.axios.get(this.$siteUrl + 'api/get_province').then(response => {
+                this.province = response.data;
+                setTimeout(function () {
+                    $("#province_id").selectpicker('refresh');
+                }, 100);
+            })
+        },
+        getCity: function (id) {
+            this.city_id = id;
+            if (this.province != '') {
+                this.city = [];
+                this.axios.get(this.$siteUrl + 'api/get_city/' + this.province_id).then(response => {
+                    this.city = response.data;
+                    setTimeout(function () {
+                        $("#city_id").selectpicker('refresh');
+                    }, 100);
+                })
+            }
+        },
+        validateName: function () {
+            if (this.name.toString().trim() == "") {
+                this.error_name_message = 'نام و نام خانوادگی نمیتواند خالی باشد.';
+                return false;
+            } else if (this.name.toString().trim().length < 6) {
+                this.error_name_message = 'نام و نام خانوادگی باید حداقل 6 کاراکتر باشد.';
+                return false;
+            } else {
+                this.error_name_message = false;
+                return true;
+            }
+        },
+        validateMobileNumber: function () {
+            if (this.mobile.toString().trim() == "") {
+                this.error_mobile_message = 'لطفا شماره موبایل خود را وارد کنید.';
+                return false;
+            } else if (this.check_mobile_number(this.mobile)) {
+                this.error_mobile_message = 'شماره موبایل وارد شده معتبر نمی باشد.';
+                return false;
+            } else {
+                this.error_mobile_message = false;
+                return true;
+            }
+        },
+        validateAddress: function () {
+            if (this.address.toString().trim() == "") {
+                this.error_address_message = 'آدرس نمیتواند خالی باشد.';
+                return false;
+            } else if (this.address.toString().trim().length < 20) {
+                this.error_address_message = 'آدرس وارد شده کوتاه است';
+                return false;
+            } else {
+                this.error_address_message = false;
+                return true;
+            }
+        },
+        validateZipCode: function () {
+            if (this.zip_code.toString().trim() == "") {
+                this.error_zip_code_message = 'کد پستی نمیتواند خالی باشد.';
+                return false;
+            } else if (this.address.toString().trim().length < 10 || isNaN(this.zip_code || this.address.toString().trim().length > 10)) {
+                this.error_zip_code_message = 'کد پستی  معتبر نمیباشد.';
+                return false;
+            } else {
+                this.error_zip_code_message = false;
+                return true;
+            }
+        },
+        validateProvince: function () {
+            if (this.province_id.toString().trim() == "") {
+                this.error_province_id_message = 'لطفا استان را انتخاب کنید.';
+                return false;
+            } else {
+                this.error_province_id_message = false;
+                return true;
+            }
+        },
+        validateZipCity: function () {
+            if (this.city_id.toString().trim() == "") {
+                this.error_city_id_message = 'لطفا شهر را انتخاب کنید.';
+                return false;
+            } else {
+                this.error_city_id_message = false;
+                return true;
+            }
+        },
+        setTitle: function (title) {
+            this.title = title;
+            this.btn_text='ثبت و ارسال به این آدرس';
+            this.id = '';
+            this.name = '';
+            this.mobile = '';
+            this.province_id = '';
+            this.city_id = '';
+            this.address = '';
+            this.zip_code = '';
+            this.getProvince();
+            this.city = [];
+            setTimeout(function () {
+                $("#city_id").selectpicker('refresh');
+            }, 100);
+        },
     }
 }

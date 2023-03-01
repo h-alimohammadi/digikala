@@ -1,7 +1,7 @@
 const site_url = 'http://localhost:8000/';
 let times = null;
 let t = 180;
-
+let promo_single_count = 0;
 $(document).ready(function () {
     $(".cat_item").mouseover(function () {
         const li_with = $(this).css('width');
@@ -278,16 +278,26 @@ $(document).ready(function () {
         $(this).parent().remove();
     });
     $("#comment_form").submit(function (event) {
-        const comment_title=$("#comment_title").val();
-        const comment_content=$("#comment_content").val();
+        const comment_title = $("#comment_title").val();
+        const comment_content = $("#comment_content").val();
 
-        const check_title=check_comment_title(comment_title);
-        const check_content=check_comment_content(comment_content);
-        if (!check_content || !check_title){
+        const check_title = check_comment_title(comment_title);
+        const check_content = check_comment_content(comment_content);
+        if (!check_content || !check_title) {
             event.preventDefault();
         }
     });
 
+    const promo_single = $(".promo_single a");
+    if (promo_single.length > 1) {
+        promo_single_count = promo_single.length;
+        startPromoSingleSlide();
+    }
+    $(".cart_header_box .dropdown-menu").on({
+        'click':function (e) {
+            e.stopPropagation();
+        }
+    })
 });
 let img_count = 0;
 let img = 0;
@@ -476,8 +486,8 @@ function check_has_compare_list() {
     }
 }
 
-check_comment_title=function (title) {
-    if (title.trim() ==''){
+check_comment_title = function (title) {
+    if (title.trim() == '') {
         $("#comment_title_error_message").show().text('عنوان نظر را وارد نمایید.');
         $("#comment_title").addClass('validate_error_border');
         return false;
@@ -487,8 +497,8 @@ check_comment_title=function (title) {
         return true;
     }
 };
-check_comment_content=function (title) {
-    if (title.trim() ==''){
+check_comment_content = function (title) {
+    if (title.trim() == '') {
         $("#comment_content_error_message").show().text('متن نظر را وارد نمایید.');
         $("#comment_content").addClass('validate_error_border');
         return false;
@@ -497,4 +507,30 @@ check_comment_content=function (title) {
         $("#comment_content").removeClass('validate_error_border');
         return true;
     }
+};
+number_format = function (num) {
+    num = num.toString();
+    let format = '';
+    let counter = 0;
+    for (let i = num.length - 1; i >= 0; i--) {
+        format += num[i];
+        counter++;
+        if (counter == 3) {
+            format += ',';
+            counter = 0;
+        }
+    }
+    return format.split('').reverse().join('');
+}
+let promo_index=0;
+startPromoSingleSlide = function () {
+    $(".promo_single_header").addClass('promo_single_bar');
+    setInterval(function () {
+        promo_index++;
+        if (promo_index>(promo_single_count-1)){
+            promo_index=0;
+        }
+        $(".promo_single a").removeClass('active');
+        $(".promo_single a[data-swiper-slide-index='"+promo_index+"']").addClass('active');
+    }, 7000 );
 };

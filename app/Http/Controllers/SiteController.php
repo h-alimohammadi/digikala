@@ -10,6 +10,7 @@ use App\Color;
 use App\Comment;
 use App\Item;
 use App\ItemValue;
+use App\Lib\Mobile_Detect;
 use App\Product;
 use App\ProductWarranty;
 use App\Review;
@@ -24,9 +25,14 @@ use Session;
 
 class SiteController extends Controller
 {
+    protected $view='';
     public function __construct()
     {
         getCatList();
+        $detect=new Mobile_Detect();
+        if ($detect->isMobile() || $detect->isTablet()){
+            $this->view='mobile/';
+        }
     }
 
     public function index()
@@ -39,7 +45,8 @@ class SiteController extends Controller
             ->where('offers', 1)->limit(10)->get()->unique('product_id');
         $newProduct = Product::where('status', 1)->orderBy('id', 'DESC')->limit(10)->get();
         $bestSellingProduct = Product::where('status', 1)->orderBy('order_number', 'DESC')->limit(10)->get();
-        return view('Shop.index', compact('sliders', 'productWarranty', 'newProduct', 'bestSellingProduct'));
+        $randomProduct=Product::where('status',1)->inRandomOrder()->limit(10)->select(['id','title','price','image_url','status','product_url','discount_price'])->get();
+        return view($this->view.'Shop.index', compact('sliders', 'productWarranty', 'newProduct', 'bestSellingProduct','randomProduct'));
     }
 
     public function showProduct($product_id, $product_url = null)
@@ -49,13 +56,13 @@ class SiteController extends Controller
         if ($product_url != null) {
             $where['product_url'] = $product_url;
         }
-        $product = Product::with('brand', 'category', 'getColor.color', 'productWarranties.warranty')->where($where)->firstOrFail();
+        $product = Product::with(['brand', 'category', 'getColor.color', 'productWarranties.warranty','ProductGallery'])->where($where)->firstOrFail();
         $productItems = Item::getProductItems($product);
         $productItemCount = ItemValue::where('product_id', $product->id)->count();
         $relateProducts = Product::where(['cat_id' => $product->cat_id, 'brand_id' => $product->brand_id])->where('id', '!=', $product->id)->get();
         $review = Review::where('product_id', $product->id)->get();
 //        return $productItems;
-        return view('Shop.show_product', compact('product', 'productItems', 'productItemCount', 'relateProducts', 'review'));
+        return view($this->view.'Shop.show_product', compact('product', 'productItems', 'productItemCount', 'relateProducts', 'review'));
 
     }
 
@@ -125,7 +132,7 @@ class SiteController extends Controller
     public function showCart()
     {
         $cartData = Cart::getCartData();
-        return view('shop.cart', compact('cartData'));
+        return view($this->view.'shop.cart', compact('cartData'));
     }
 
     public function removeProduct(Request $request)
@@ -242,10 +249,11 @@ class SiteController extends Controller
 
     }
 
-    public function getProductChartData()
+    public function CartProductData()
     {
-        
+        return Cart::getCartData();
     }
+
 
 
 

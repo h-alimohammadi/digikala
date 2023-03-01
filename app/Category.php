@@ -20,7 +20,7 @@ class Category extends Model
             foreach ($value->getChild as $key1 => $value1) {
                 $array[$value1->id] = ' - ' . $value1->name;
                 foreach ($value1->getChild as $key2 => $value2) {
-                    $array[$value2->id] = ' - - ' . $value2->name;
+                    $array[$value2->id] = ' - - ' . $value2->name; 
                 }
             }
         }

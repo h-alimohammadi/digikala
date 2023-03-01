@@ -1,6 +1,7 @@
-
 @if($productItemCount>0)
-    <h6 style="margin-right: -15px">ویژگی های محصول</h6>
+    @if(!isset($remove_title))
+        <h6 style="margin-right: -15px">ویژگی های محصول</h6>
+    @endif
     <ul class="important_item_ul">
         @php($i =0 )
         @foreach($productItems as $key1=>$value1)
@@ -22,9 +23,9 @@
             @endforeach
         @endforeach
     </ul>
-
-    @if($i>1)
-        <p class="show_more_important_item">موارد بیشتر</p>
+    @if(!isset($remove_title))
+        @if($i>1)
+            <p class="show_more_important_item">موارد بیشتر</p>
+        @endif
     @endif
-
 @endif

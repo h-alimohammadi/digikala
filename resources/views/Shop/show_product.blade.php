@@ -90,6 +90,7 @@
                 </div>
             </div>
         </div>
+            <other-price :product_id="{{ $product->id }}"></other-price>
         @include('Include.horizontal_product_list',['productList'=>$relateProducts,'title'=>'محصولات مرتبط'])
 
         <div id="tab_div">
@@ -136,6 +137,7 @@
 
         </div>
     </div>
+    <vue-chart :product_id="{{ $product->id }}"></vue-chart>
 @endsection
 @section('link')
     <link href="{{ asset('slick/slick.css') }}" rel="stylesheet">

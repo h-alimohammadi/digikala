@@ -80,10 +80,18 @@
                     </div>
                 </div>
                 <div class="header_divider"></div>
-                <div class="cart_header_box">
-                    <div class="btn_cart">
-                        <p id="cart_product_count" data-counter="{{\App\Cart::getProductCount()}}">سبدخرید</p>
+                <div class="cart_header_box dropdown">
+                    <div class="btn_cart dropdown-toggle" data-toggle="dropdown">
+                        <span id="cart_product_count" data-counter="{{\App\Cart::getProductCount()}}">سبدخرید</span>
                     </div>
+
+                        <div class="dropdown cart">
+                            <div class="dropdown-menu">
+                                @if(\App\Cart::getProductCount()>0)
+                                <header-cart></header-cart>
+                                @endif
+                            </div>
+                        </div>
                 </div>
             </div>
 
@@ -94,6 +102,74 @@
     <div class="container-fluid">
         @yield('content')
     </div>
+    <footer class="c-footer">
+        <nav>
+            <a href="">
+                <div class="card-footer-feature-item-1">تحویل اکسپرس</div>
+            </a>
+            <a href="">
+                <div class="card-footer-feature-item-2">پشتیبانی ۲۴ ساعته</div>
+            </a>
+            <a href="">
+                <div class="card-footer-feature-item-3">پرداخت در محل</div>
+            </a>
+            <a href="">
+                <div class="card-footer-feature-item-4">۷ روز ضمانت بازگشت</div>
+            </a>
+            <a href="">
+                <div class="card-footer-feature-item-5">ضمانت اصل بودن کالا</div>
+            </a>
+        </nav>
+        <div class="row">
+            <div class="col-md-3">
+                <h6>راهنمای خرید از {{env('SHOP_NAME','')}}</h6>
+                <ul>
+                    <li>
+                        <a href="">نحوه ثبت سفارش</a>
+                    </li>
+                    <li>
+                        <a href="">رویه ارسال سفارش</a>
+                    </li>
+                    <li>
+                        <a href="">شیوه های پرداخت</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-3">
+                <h6>خدمات مشتریان</h6>
+                <ul>
+                    <li>
+                        <a href="">پاسخ به پرسش های متداول</a>
+                    </li>
+                    <li>
+                        <a href="">رویه های بازگرداندن کالا</a>
+                    </li>
+                    <li>
+                        <a href="">شرایط استفاده</a>
+                    </li>
+                    <li>
+                        <a href="">حریم خصوصی</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-3">
+                <h6>از تخفیف ها و جدیدترین های {{env('SHOP_NAME','')}} باخبر شوید</h6>
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="آدرس ایمیل خود را وارد کنید">
+                    <button class="btn btn-success">ارسال</button>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <h6>مجوز های فروشگاه</h6>
+                <div>
+                    <img src="{{asset('files/images/enamad.png')}}">
+                    <img src="{{asset('files/images/BPMLogo.png')}}">
+                </div>
+            </div>
+        </div>
+        <p>برای استفاده از مطالب {{env('SHOP_NAME','')}}، داشتن «هدف غیرتجاری» و ذکر «منبع» کافیست. تمام حقوق اين
+            وب‌سايت نیز برای شرکت نوآوران فن آوازه (فروشگاه آنلاین {{env('SHOP_NAME','')}}) است.</p>
+    </footer>
 </div>
 <div id="loading_box">
     <div class="loading_div">

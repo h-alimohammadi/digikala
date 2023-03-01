@@ -53,7 +53,7 @@
             </div>
         </div>
         <address-form @setData="updateAddressList" ref="data"></address-form>
-        <div v-if="show_default_address()">
+            <div v-if="show_default_address()">
             <div class="address_row default_address">
                 <div style="padding-right: 20px">
                     <ul>
@@ -61,7 +61,7 @@
                             <h6>{{ListAddress[0].name}}</h6>
                         </li>
                         <li>
-                            <span class="data_link">اصلاح این آدرس</span>
+                            <span class="data_link"  v-on:click="update_row(ListAddress[0])">اصلاح این آدرس</span>
                         </li>
                         <li class="change_address_btn">
                             <button class="address_btn" v-on:click="change_address()">تغییر آدرس ارسال</button>
@@ -95,7 +95,7 @@
         <ordering-time v-if="city_id>0" v-bind:city_id="city_id"></ordering-time>
         <div class="message_div" v-if="show_dialog_box">
             <div class="message_box">
-                <p id="msg">آیا مایل به حذف این محصول هستید ؟</p>
+                <p id="msg">آیا مایل به حذف این آدرس هستید ؟</p>
                 <a class="alert alert-success" v-on:click="delete_address()">بله</a>
                 <a class="alert alert-danger" v-on:click="show_dialog_box=false">خیر</a>
             </div>
@@ -149,7 +149,6 @@
             update_row: function (address) {
                 this.$refs.data.setUpdateData(address, 'ویرایش آدرس');
             },
-
             remove_address: function (address) {
                 this.show_dialog_box = true;
                 this.remove_address_id = address.id;

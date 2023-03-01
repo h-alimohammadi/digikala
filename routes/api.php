@@ -18,3 +18,5 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 Route::get('get_province','ApiController@getProvince');
 Route::get('get_city/{id}','ApiController@getCity');
+Route::get('getProductChartData/{id}','ApiController@getProductChartData');
+Route::post('getProductWarranty','ApiController@getProductWarranty');

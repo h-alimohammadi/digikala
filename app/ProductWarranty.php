@@ -24,7 +24,7 @@ class ProductWarranty extends Model
 //        if (array_key_exists('string', $request->all())) {
 //            $productWarranty = $productWarranty->where('');
 //        }
-        $productWarranty = $productWarranty->where('product_id',$request->get('product_id'));
+        $productWarranty = $productWarranty->where('product_id', $request->get('product_id'));
         $productWarranty = $productWarranty->paginate(10);
         $productWarranty->withPath($string);
         return $productWarranty;
@@ -36,6 +36,12 @@ class ProductWarranty extends Model
             ->withDefault(['name' => '', 'id' => 0]);
     }
 
+    public function seller()
+    {
+        return $this->belongsTo(Seller::class, 'seller_id', 'id')
+            ->withDefault(['brand_name' => env('SHOP_NAME', ''), 'id' => 0]);
+    }
+
     public function warranty()
     {
         return $this->belongsTo(Warranty::class, 'warranty_id', 'id');
@@ -44,12 +50,12 @@ class ProductWarranty extends Model
     public function product()
     {
         return $this->belongsTo(Product::class, 'product_id', 'id')
-            ->select(['id', 'title', 'image_url','cat_id','product_url']);
+            ->select(['id', 'title', 'image_url', 'cat_id', 'product_url']);
     }
 
     public function itemValue()
     {
-        return $this->hasMany(ItemValue::class,'product_id','product_id');
+        return $this->hasMany(ItemValue::class, 'product_id', 'product_id');
     }
 
     protected static function boot()

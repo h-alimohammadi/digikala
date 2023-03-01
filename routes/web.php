@@ -128,11 +128,15 @@ Route::get('compare/{id_product1}/{product_id2?}/{product_id3?}/{product_id4?}',
 Route::get('product/comment/{product}', 'SiteController@commentForm')->middleware('auth');
 Route::post('product/comment/{product}', 'SiteController@addComment')->middleware('auth');
 Route::get('site/getComment', 'ApiController@getComment');
-Route::get('site/getProductChartData/{product}', 'SiteController@getProductChartData');
+Route::get('site/CartProductData', 'SiteController@CartProductData');
 
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/test', function (){
+    echo  getTimestamp('1401/6/10','first');
+});
+
 //Route::post('admin/comment/change_status', function (\Illuminate\Http\Request $request) {
 //    return $request->get('comment_id');
 //});

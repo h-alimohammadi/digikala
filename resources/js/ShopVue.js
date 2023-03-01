@@ -16,6 +16,7 @@ Vue.prototype.$route = 'http://localhost:8000/';
 import Counter from "./SiteComponent/Counter";
 import OfferTime from "./SiteComponent/OfferTime";
 import ShoppingCart from "./SiteComponent/ShoppingCart";
+import MobileShoppingCart from "./SiteComponent/MobileShoppingCart";
 import AddressList from "./SiteComponent/AddressList";
 import AddressForm from "./SiteComponent/AddressForm";
 import OrderingTime from "./SiteComponent/OrderingTime";
@@ -24,6 +25,12 @@ import DiscountBox from "./SiteComponent/DiscountBox";
 import ProductBox from "./SiteComponent/ProductBox";
 import CompareProductList from './SiteComponent/CompareProductList';
 import CommentList from './SiteComponent/CommentList';
+import VueChart from './SiteComponent/VueChart';
+import HeaderCart from './SiteComponent/HeaderCart';
+import OtherPrice from './SiteComponent/OtherPrice';
+import MobileOtherPrice from './SiteComponent/MobileOtherPrice';
+import MobileAddressList from './SiteComponent/MobileAddressList';
+import MobileAddressForm from './SiteComponent/MobileAddressForm';
 
 Vue.component('pagination', require('laravel-vue-pagination'));
 const app = new Vue({
@@ -40,5 +47,12 @@ const app = new Vue({
         ProductBox,
         CompareProductList,
         CommentList,
+        VueChart,
+        HeaderCart,
+        OtherPrice,
+        MobileOtherPrice,
+        MobileShoppingCart,
+        MobileAddressList,
+        MobileAddressForm
     }
 });

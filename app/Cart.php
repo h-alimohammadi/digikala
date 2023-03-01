@@ -84,7 +84,7 @@ class Cart extends Model
                 }
             }
         }
-        $products = Product::whereIn('id', $product_id)->select(['id', 'title', 'image_url','cat_id'])->get();
+        $products = Product::whereIn('id', $product_id)->select(['id', 'title', 'image_url','cat_id','product_url'])->get();
         $colors = Color::whereIn('id', $color_id)->get();
         $warranties = Warranty::whereIn('id', $warranty_id)->get();
         $cart_data = [];
@@ -100,6 +100,7 @@ class Cart extends Model
 
             if ($product && $warranty && $product_number > 0) {
                 $cart_data['product'][$j]['product_id'] = $product->id;
+                $cart_data['product'][$j]['product_url'] = $product->product_url;
                 $cart_data['product'][$j]['product_title'] = $product->title;
                 $cart_data['product'][$j]['cat_id'] = $product->cat_id;
                 $cart_data['product'][$j]['product_image_url'] = $product->image_url;
@@ -117,6 +118,8 @@ class Cart extends Model
 
                 $cart_data['product'][$j]['price1'] = $product_number * $v->price1;// einga
                 if ($type == 'cart') {
+                    $cart_data['product'][$j]['offers_last_time']=$v->offers_last_time;
+                    $cart_data['product'][$j]['int_price2'] = $product_number * $v->price2;
                     $cart_data['product'][$j]['price2'] = replace_number(number_format($product_number * $v->price2));
                 } else {
                     $cart_data['product'][$j]['price2'] = $product_number * $v->price2;

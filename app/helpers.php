@@ -487,10 +487,160 @@ function getScoreItem($score, $typeScore)
 
 function getScoreType($score, $typeScore)
 {
-    if (array_key_exists($score,$typeScore)) {
+    if (array_key_exists($score, $typeScore)) {
         return $typeScore[$score];
     } else {
         return '';
     }
 }
 
+function get_product_price_changed($product_id)
+{
+    $array = [];
+    $jdf = new Jdf();
+    $points = [];
+
+    $product_color = \App\ProductColor::with('color')->where('product_id', $product_id)->get();
+    $timestamp = strtotime('-30 day');
+
+    $product_price = ProductPrice::with(['getColor'])
+        ->with(['getProductWarranty' => function ($query) {
+            $query->withTrashed();
+        }])
+        ->where('product_id', $product_id)->where('time', '>=', $timestamp)->get();
+
+    $warranty_price = [];
+    $price = [];
+    $seller = [];
+    $color = [];
+    $zone = [];
+    foreach ($product_price as $key => $value) {
+        $date = $jdf->tr_num($jdf->jdate('Y-n-j', $value->time));
+        $warranty_price[$date][$value->color_id] = $value->price;
+        $seller[$date][$value->color_id] = 'دیجی انلاین';
+    }
+    for ($i = 30; $i >= 0; $i--) {
+        $timestamp = strtotime('-' . $i . ' day');
+        $date = $jdf->tr_num($jdf->jdate('Y-n-j', $timestamp));
+        if (array_key_exists($date, $warranty_price)) {
+            foreach ($product_color as $key => $value) {
+                $size = array_key_exists($value->color_id, $price) ? sizeof($price[$value->color_id]) : 0;
+                $points[$date] = $date;
+                if (array_key_exists($value->color_id, $warranty_price[$date])) {
+                    $color[$value->color_id] = ['name' => $value->color->name, 'code' => $value->color->code, 'id' => $value->color->id];
+                    $price[$value->color_id][$size]['y'] = $warranty_price[$date][$value->color_id];
+                    if ($warranty_price[$date][$value->color_id] == 0) {
+                        $price[$value->color_id][$size]['y'] = $price[$value->color_id][($size - 1)]['y'];
+                        $price[$value->color_id][$size]['price'] = 0;
+                        $price[$value->color_id][$size]['has_product'] = 'no';
+                        $price[$value->color_id][$size]['color'] = 'grey';
+                        $price[$value->color_id][$size]['seller'] = 'دیجی آنلاین';
+
+                        $zone_size = array_key_exists($value->color_id, $zone) ? sizeof($zone[$value->color_id]) : 0;
+                        $zone[$value->color_id][$zone_size] = ['value' => $size];
+                        if (sizeof($zone[$value->color_id]) == 1 && $i == 0) {
+                            $zone[$value->color_id][($zone_size + 1)]['color'] = $zone[$value->color_id][$zone_size]['color'];
+                            $zone[$value->color_id][($zone_size + 1)]['color'] = 'gray';
+                        }
+                    } else {
+                        $price[$value->color_id][$size]['price'] = $warranty_price[$date][$value->color_id];
+                        $price[$value->color_id][$size]['has_product'] = 'Ok';
+                        $price[$value->color_id][$size]['color'] = '#00bfd6';
+                        $price[$value->color_id][$size]['seller'] = 'دیجی آنلاین';
+                        if (array_key_exists($value->color_id, $zone)) {
+                            $first = sizeof($zone[$value->color_id]) - 1;
+                            $end = isset($zone[$first]) ? sizeof($zone[$first]) : 0;
+                            if ($price[$value->color_id][($size - 1)]['price'] == 0) {
+                                $zone[$value->color_id][sizeof($zone[$value->color_id])] = ['value' => $size, 'color' => 'gray'];
+                            }
+                        }
+                    }
+                } else {
+                    if (array_key_exists($value->color_id, $price) && array_key_exists(($size - 1), $price[$value->color_id])) {
+                        $color[$value->color_id] = ['name' => $value->color->name, 'code' => $value->color->code, 'id' => $value->color->id];
+
+                        if ($price[$value->color_id][($size - 1)]['price'] == 0) {
+                            $price[$value->color_id][$size]['y'] = $price[$value->color_id][($size - 1)]['y'];
+                            $price[$value->color_id][$size]['price'] = 0;
+                            $price[$value->color_id][$size]['has_product'] = 'no';
+                            $price[$value->color_id][$size]['color'] = 'grey';
+                            $price[$value->color_id][$size]['seller'] = 'دیجی آنلاین';
+
+
+                            $zone_size = array_key_exists($value->color_id, $zone) ? sizeof($zone[$value->color_id]) : 0;
+                            $zone[$value->color_id][$zone_size] = ['value' => $size, 'color' => 'grey'];
+
+                        } else {
+                            $price[$value->color_id][$size]['y'] = $price[$value->color_id][($size - 1)]['y'];
+                            $price[$value->color_id][$size]['price'] = $price[$value->color_id][($size - 1)]['price'];
+                            $price[$value->color_id][$size]['has_product'] = 'Ok';
+                            $price[$value->color_id][$size]['color'] = '#00bfd6';
+                            $price[$value->color_id][$size]['seller'] = 'دیجی آنلاین';
+                            if (array_key_exists($value->color_id, $zone)) {
+                                $first = sizeof($zone[$value->color_id]) - 1;
+                                $end = isset($zone[$first]) ? sizeof($zone[$first]) : 0;
+                                if ($price[$value->color_id][($size - 1)]['price'] == 0) {
+                                    $zone[$value->color_id][sizeof($zone[$value->color_id])] = ['value' => $size, 'color' => 'gray'];
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } else if (!array_key_exists($date, $warranty_price) && sizeof($price) > 0) {
+            $points[$date] = $date;
+            foreach ($product_color as $key => $value) {
+                $size = array_key_exists($value->color_id, $price) ? sizeof($price[$value->color_id]) : 0;
+                if (array_key_exists($value->color_id, $price) && array_key_exists(($size - 1), $price[$value->color_id])) {
+                    $color[$value->color_id] = ['name' => $value->color->name, 'code' => $value->color->code, 'id' => $value->color->id];
+
+                    if ($price[$value->color_id][($size - 1)]['price'] == 0) {
+                        $price[$value->color_id][$size]['y'] = $price[$value->color_id][($size - 1)]['y'];
+                        $price[$value->color_id][$size]['price'] = 0;
+                        $price[$value->color_id][$size]['has_product'] = 'no';
+                        $price[$value->color_id][$size]['color'] = 'grey';
+                        $price[$value->color_id][$size]['seller'] = 'دیجی آنلاین';
+
+                        if (array_key_exists($value->color_id, $zone)) {
+                            $first = sizeof($zone[$value->color_id]) - 1;
+                            $end = isset($zone[$first]) ? sizeof($zone[$first]) : 0;
+                            if ($price[$value->color_id][($size - 1)]['price'] == 0) {
+//                                $zone[$value->color_id][sizeof($zone[$value->color_id])] = ['value' => $size, 'color' => 'gray'];
+                            }
+                        }
+                    } else {
+                        $price[$value->color_id][$size]['y'] = $price[$value->color_id][($size - 1)]['y'];
+                        $price[$value->color_id][$size]['price'] = $price[$value->color_id][($size - 1)]['price'];
+                        $price[$value->color_id][$size]['has_product'] = 'Ok';
+                        $price[$value->color_id][$size]['color'] = '#00bfd6';
+                        $price[$value->color_id][$size]['seller'] = 'دیجی آنلاین';
+                    }
+                }
+            }
+        }
+    }
+
+    $i = 0;
+    foreach ($points as $key => $value) {
+        $points[$i] = replace_number($value);
+        unset($points[$key]);
+        $i++;
+    }
+    $j = 0;
+    foreach ($price as $key => $value) {
+        $price[$j] = $value;
+        unset($price[$key]);
+        $j++;
+    }
+    $c = 0;
+    foreach ($color as $key => $value) {
+        $color[$c] = $value;
+        unset($color[$key]);
+        $c++;
+    }
+    $array['points'] = $points;
+    $array['price'] = $price;
+    $array['color'] = $color;
+    $array['zone'] = $zone;
+    return $array;
+}

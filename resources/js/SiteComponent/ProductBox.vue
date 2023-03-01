@@ -164,7 +164,7 @@
             getProduct: function (page = 1) {
                 $("#loading_box").show();
                 this.request_url = window.location.href.replace(this.$siteUrl, this.$siteUrl + 'get-product/');
-                const url = this.request_url + '?page=' + page
+                const url = this.request_url + '?page=' + page;
                 this.axios.get(this.get_request_url(this.request_url, page)).then(response => {
                     if (response.data['count'] != undefined) {
                         $('#product_count').text(this.replace_number(response.data['count']) + " کالا");

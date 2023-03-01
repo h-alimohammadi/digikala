@@ -29,8 +29,7 @@
                         @foreach($sliders as $key=>$slider)
                             <div class="slide_div an" id="slider_img_{{$key}}"
                                  @if($key==0) style="display: block;" @endif >
-                                <a href="{{$slider->url}}"
-                                   style='background-image: url("{{asset('files/uploads/slider/'.$slider->image_url)}}")'></a>
+                                <a href="{{$slider->url}}" style='background-image: url("{{asset('files/uploads/slider/'.$slider->image_url)}}")'></a>
                             </div>
                         @endforeach
                     </div>
@@ -52,7 +51,44 @@
 
     </div>
     <div class="row">
-        @include('Include.horizontal_product_list',['productList'=>$newProduct,'title'=>'جدید ترین محصولات فروشگاه'])
+        @if(sizeof($randomProduct)>1)
+            <div class="col-md-9">
+                @include('Include.horizontal_product_list',['productList'=>$newProduct,'title'=>'جدید ترین محصولات فروشگاه'])
+            </div>
+            <div class="col-md-3 promo_single">
+                <div class="promo_single_header">
+                    <span>پیشنهاد های لحظه ای برای شما</span>
+                </div>
+                @foreach($randomProduct as $key=>$value)
+                    @php
+                        $price1 = $value->price+$value->discount_price;
+                    @endphp
+                    <a href="{{ url('product/dkp-'.$value->id.'/'.$value->product_url) }}" data-swiper-slide-index="{{ $key }}" @if($key==0) class="active"  @endif>
+                        <img src="{{asset('files/uploads/thumbnails/'.$value->image_url)}}">
+                        <p class="title">
+                            @if(strlen($value->title)>50)
+                                {{ mb_substr($value->title,0,33).'...' }}
+                            @else
+                                {{$value->title}}
+                            @endif
+                        </p>
+                        <div class="discount_price">
+                            @if(!empty($value->discount_price))
+                                <del>{{ replace_number(number_format($price1)) }}</del>
+                            @endif
+                        </div>
+                        <div class="price">
+                            <div>{{ replace_number(number_format($value->price)) }} تومان</div>
+                        </div>
+                    </a>
+                    @endforeach
+            </div>
+        @else
+            @include('Include.horizontal_product_list',['productList'=>$newProduct,'title'=>'جدید ترین محصولات فروشگاه'])
+
+        @endif
+    </div>
+    <div class="row">
         @include('Include.horizontal_product_list',['productList'=>$bestSellingProduct,'title'=>'پرفروش ترین محصولات فروشگاه'])
     </div>
 

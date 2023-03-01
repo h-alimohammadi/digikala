@@ -12,6 +12,9 @@
                     </button>
                 </div>
                 <div class="modal-body" id="add_address_box">
+                    <div class="row" v-if="server_error">
+                        <div class="alert alert-danger">خطا در ارسال اطلاعات، لطفا مجددا تلاش نمایید.</div>
+                    </div>
                     <div class="row">
                         <div class="col-md-7">
                             <div>
@@ -100,8 +103,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <button class="btn btn-primary" v-on:click="add_address()">ثبت و ارسال به این آدرس</button>
-
+                            <button class="btn btn-primary" v-on:click="add_address()">{{ btn_text }}</button>
                         </div>
                         <div class="col-md-5">
                             <div id="map" style="width:400px;height:400px;"></div>
@@ -138,32 +140,14 @@
                 province: [],
                 city: [],
                 title: 'افزودن آدرس جدید',
+                btn_text: 'ثبت و ارسال به این آدرس',
+                server_error: false,
             }
         },
         mounted() {
             this.getProvince();
         },
         methods: {
-            getProvince: function () {
-                this.axios.get(this.$siteUrl + 'api/get_province').then(response => {
-                    this.province = response.data;
-                    setTimeout(function () {
-                        $("#province_id").selectpicker('refresh');
-                    }, 100);
-                })
-            },
-            getCity: function (id) {
-                this.city_id = id;
-                if (this.province != '') {
-                    this.city = [];
-                    this.axios.get(this.$siteUrl + 'api/get_city/' + this.province_id).then(response => {
-                        this.city = response.data;
-                        setTimeout(function () {
-                            $("#city_id").selectpicker('refresh');
-                        }, 100);
-                    })
-                }
-            },
             add_address: function () {
                 let validateName = this.validateName();
                 let validateMobileNumber = this.validateMobileNumber();
@@ -185,86 +169,25 @@
                     formData.append('zip_code', this.zip_code);
                     formData.append('lng', lng);
                     formData.append('lat', lat);
+                    this.server_error = false;
                     const url = this.$siteUrl + 'user/add_address';
                     this.axios.post(url, formData).then(responce => {
                         $("#loading_box").hide();
                         if (responce.data != "error") {
                             this.$emit('setData', responce.data)
                             $("#myModal").modal('hide');
+                        }else {
+                            this.server_error = true;
                         }
-                    }).catch(error=>{
+                    }).catch(error => {
                         $("#loading_box").hide();
+                        this.server_error = true;
                     });
-                }
-            },
-            validateName: function () {
-                if (this.name.toString().trim() == "") {
-                    this.error_name_message = 'نام و نام خانوادگی نمیتواند خالی باشد.';
-                    return false;
-                } else if (this.name.toString().trim().length < 6) {
-                    this.error_name_message = 'نام و نام خانوادگی باید حداقل 6 کاراکتر باشد.';
-                    return false;
-                } else {
-                    this.error_name_message = false;
-                    return true;
-                }
-            },
-            validateMobileNumber: function () {
-                if (this.mobile.toString().trim() == "") {
-                    this.error_mobile_message = 'لطفا شماره موبایل خود را وارد کنید.';
-                    return false;
-                } else if (this.check_mobile_number(this.mobile)) {
-                    this.error_mobile_message = 'شماره موبایل وارد شده معتبر نمی باشد.';
-                    return false;
-                } else {
-                    this.error_mobile_message = false;
-                    return true;
-                }
-            },
-            validateAddress: function () {
-                if (this.address.toString().trim() == "") {
-                    this.error_address_message = 'آدرس نمیتواند خالی باشد.';
-                    return false;
-                } else if (this.address.toString().trim().length < 20) {
-                    this.error_address_message = 'آدرس وارد شده کوتاه است';
-                    return false;
-                } else {
-                    this.error_address_message = false;
-                    return true;
-                }
-            },
-            validateZipCode: function () {
-                if (this.zip_code.toString().trim() == "") {
-                    this.error_zip_code_message = 'کد پستی نمیتواند خالی باشد.';
-                    return false;
-                } else if (this.address.toString().trim().length < 10 || isNaN(this.zip_code || this.address.toString().trim().length > 10)) {
-                    this.error_zip_code_message = 'کد پستی  معتبر نمیباشد.';
-                    return false;
-                } else {
-                    this.error_zip_code_message = false;
-                    return true;
-                }
-            },
-            validateProvince: function () {
-                if (this.province_id.toString().trim() == "") {
-                    this.error_province_id_message = 'لطفا استان را انتخاب کنید.';
-                    return false;
-                } else {
-                    this.error_province_id_message = false;
-                    return true;
-                }
-            },
-            validateZipCity: function () {
-                if (this.city_id.toString().trim() == "") {
-                    this.error_city_id_message = 'لطفا شهر را انتخاب کنید.';
-                    return false;
-                } else {
-                    this.error_city_id_message = false;
-                    return true;
                 }
             },
             setUpdateData: function (address, title) {
                 this.title = title;
+                this.btn_text = 'ویرایش';
                 this.id = address.id;
                 this.name = address.name;
                 this.mobile = address.mobile;
@@ -290,21 +213,6 @@
                 $("#myModal").modal('show');
 
             },
-            setTitle: function (title) {
-                this.title = title;
-                this.id = '';
-                this.name = '';
-                this.mobile = '';
-                this.province_id = '';
-                this.city_id = '';
-                this.address = '';
-                this.zip_code = '';
-                this.getProvince();
-                this.city = [];
-                setTimeout(function () {
-                    $("#city_id").selectpicker('refresh');
-                }, 100);
-            }
         },
     }
 </script>

@@ -19,7 +19,7 @@
             @endif
         @endforeach
     </ul>
-    <input type="hidden" name="color_id" value="{{ $color_id }}">
+    <input type="hidden" id="color_id" name="color_id" value="{{ $color_id }}">
     <p class="info_item_product">
         <span class="fa fa-check-square"></span>
         @foreach($product->productWarranties as $key=>$value)
